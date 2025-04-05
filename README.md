@@ -1,7 +1,7 @@
 # IN453 Unit 3 - Secure Data Access Application
-**Author:** SGT Sedjro Tovihouande  
+**Author:** Sedjro Tovihouande  
 **Course:** IN453 – Advanced Software Development Using PHP and JavaScript  
-**Project:** Unit 3 - Data Access Application (Part 2)
+**Project:** Unit 3 - Data Access Application Part 2
 
 ## 🔐 Project Summary
 This web application demonstrates the use of layered architecture and secure role-based access control using PHP and MySQL. The application builds on a previously developed N-tier system and adds database user roles, credential-based login, and table-level security.
@@ -34,4 +34,4 @@ This web application demonstrates the use of layered architecture and secure rol
 1. Place files in `htdocs/IN453AppUnit3`
 2. Start Apache via XAMPP
 3. Access `http://localhost/IN453AppUnit3/login.php`
-4. Use credentials above to test each role
+4. Use the credentials above to test each role
