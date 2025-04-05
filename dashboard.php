@@ -1,19 +1,27 @@
 <?php
+session_start();
+// 🚫 Block access if not logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
 require_once "Business.php";
 
-$host = $_POST['server'];
-$database = $_POST['database'];
-$username = $_POST['username'];
-$password = $_POST['password'];
+// Use session credentials
+$host = $_SESSION['server'];
+$database = $_SESSION['database'];
+$username = $_SESSION['username'];
+$password = $_SESSION['password'];
+
+// Initialize outputs
+$rowA = null;
+$rowC = null;
+$names = [];
 
 try {
     $business = new Business($host, $username, $password, $database);
 
-    $rowA = null;
-    $rowC = null;
-    $names = [];
-
-    // Conditionally load data based on username
+    // Control access logic
     if ($username === "IN453A") {
         $rowA = $business->getRowCountA();
         $rowC = $business->getRowCountC();
@@ -25,34 +33,100 @@ try {
     }
 
 } catch (Exception $e) {
-    echo "<p style='color:red;'>Login Failed: Invalid credentials or insufficient access.</p>";
-    exit;
+    die("Login Failed: " . $e->getMessage());
 }
 ?>
 
 <!DOCTYPE html>
-<html>
-<head><title>User Dashboard</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IN453 Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #003366;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p, ul {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .note {
+            font-size: 14px;
+            color: #777;
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
 <body>
-<h2>Welcome, <?php echo htmlspecialchars($username); ?></h2>
+    <div class="container">
+        <h2>Welcome, <?php echo htmlspecialchars($username); ?></h2>
+        <div style="text-align: right;">
+            <form action="logout.php" method="post">
+                <input type="submit" value="Logout" style="background-color: #cc0000; color: white; padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer;">
+            </form>
+        </div>
 
-<?php if ($rowA !== null): ?>
-    <p><strong>Rows in IN453A:</strong> <?php echo $rowA; ?></p>
-<?php endif; ?>
+        <?php if ($rowA !== null): ?>
+            <div class="section">
+                <p><strong>Rows in IN453A:</strong> <?php echo $rowA; ?></p>
+            </div>
+        <?php endif; ?>
 
-<?php if ($rowC !== null): ?>
-    <p><strong>Rows in IN453C:</strong> <?php echo $rowC; ?></p>
-<?php endif; ?>
+        <?php if ($rowC !== null): ?>
+            <div class="section">
+                <p><strong>Rows in IN453C:</strong> <?php echo $rowC; ?></p>
+            </div>
+        <?php endif; ?>
 
-<?php if (!empty($names)): ?>
-    <h3>Names from IN453B:</h3>
-    <ul>
-        <?php foreach ($names as $name): ?>
-            <li><?php echo htmlspecialchars($name); ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
+        <?php if (!empty($names)): ?>
+            <div class="section">
+                <p><strong>Names from IN453B:</strong></p>
+                <ul>
+                    <?php foreach ($names as $name): ?>
+                        <li><?php echo htmlspecialchars($name); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
 
-    </ul>
+        <div class="note">
+            Data displayed based on access level of: <strong><?php echo htmlspecialchars($username); ?></strong>
+        </div>
+    </div>
 </body>
 </html>
